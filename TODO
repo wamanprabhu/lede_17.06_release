@@ -1,0 +1,77 @@
+Kernel-
+How to get LEDE 17.06 + linux 4.4.52 running on an uDPU
+###############################################################
+#give rights to /opt so thinks works, you can’t do this as root.
+sudo chown -R $(whoami):$(id -gn) /opt/	
+mkdir -p /opt/kernel/
+mkdir -p /opt/openwrt/
+ 
+###############################################################
+#prep kernel
+cd /opt/kernel/
+git clone https://github.com/wamanprabhu/linux-4.4.52-armada-17.06.git
+make uDPU_kernel_defconfig
+ 
+###############################################################
+#prep LEDE
+cd /opt/openwrt/
+git clone https://github.com/wamanprabhu/lede_17.06_release.git
+ 
+###############################################################
+#update and index feeds
+cd /opt/openwrt/<openwrt/lede>/
+./scripts/feeds update -a
+./scripts/feeds install -a
+ 
+###############################################################
+#add packages and drivers
+cd /opt/openwrt/<openwrt/lede>/
+cp uDPU_lede_defconfig .config 
+and/or
+make menuconfig
+#Target System -> Marvell 64b
+#Target Profile -> Marvell Armada 3720 DB (DB-88F3720-DDR3)
+#Target Images -> ramdisk,tar.gz, ext4
+#Advanced configuration Options -> Use external kernel tree -> /opt/kernel/linux-4.4.52-armada-17.06
+#Add the following packages:
+#nano
+#openvswitch
+#screen
+#dnsmasqfull (you have to remove the other dnsmasq to get dnsmaqfull to work)
+#chrony
+#luci
+#wireguard
+#tcpdump
+#linuxptp
+#zabbix
+#gpsd
+#i2c-tools
+#python-dev
+ 
+###############################################################
+#Build it
+make -j$(($(nproc)+1))
+
+<u-boot-DIR>/tools/mkimage -n 'Ramfs Image' -A arm64 -O linux -T ramdisk -C gzip -d bin/targets/mvebu64/generic/lede-mvebu64-rootfs.cpio.gz bin/targets/mvebu64/generic/telus/openwrt-armada-3720-db-Image-initramfs
+
+untar/uncompress lede-mvebu64-armada-3720-db-rootfs.tar.gz
+./build_dir/host/mtd-utils-1.5.2/mkfs.jffs2 -n -d bin/targets/mvebu64/generic/lede-mvebu64-armada-3720-db-rootfs --compression-mode=none -e 0x10000 -s 256 -p -o bin/targets/mvebu64/generic/telus/jffs2.img
+
+cp bin/targets/mvebu64/generic/openwrt-armada-3720-db-Image /var/lib/tftpboot/telus
+cp bin/targets/mvebu64/generic/marvell/armada-3720-db-C.dtb /var/lib/tftpboot/telus
+cp bin/targets/mvebu64/generic/telus/jffs2.img /var/lib/tftpboot/telus
+
+u-boot prompt for flashing;
+sf probe
+tftp $kernel_addr telus/openwrt-armada-3720-db-Image
+sf erase $offset_kernel 0xc00000
+sf write $kernel_addr $offset_kernel $kernel_image_size
+tftp $fdt_addr telus/armada-3720-db-C.dtb
+sf erase $offset_dtb 0x10000
+sf write $fdt_addr $offset_dtb $dtb_size
+tftp $ramfs_addr telus/openwrt-armada-3720-db-Image-initramfs
+sf erase $offset_ramfs 0x600000
+or
+tftp $ramfs_addr telus/jffs2.img
+sf erase $offset_ramfs 0x1500000
+sf write $ramfs_addr $offset_ramfs $ramfs_image_size
