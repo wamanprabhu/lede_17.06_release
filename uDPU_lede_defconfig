@@ -26,12 +26,13 @@ CONFIG_HAVE_DOT_CONFIG=y
 # CONFIG_TARGET_lantiq is not set
 # CONFIG_TARGET_malta is not set
 # CONFIG_TARGET_pistachio is not set
-CONFIG_TARGET_mvebu64=y
+# CONFIG_TARGET_mvebu64 is not set
 # CONFIG_TARGET_mvebu is not set
 # CONFIG_TARGET_mvebu38x is not set
 # CONFIG_TARGET_kirkwood is not set
 # CONFIG_TARGET_mediatek is not set
 # CONFIG_TARGET_ramips is not set
+CONFIG_TARGET_methode=y
 # CONFIG_TARGET_rb532 is not set
 # CONFIG_TARGET_mcs814x is not set
 # CONFIG_TARGET_layerscape is not set
@@ -46,14 +47,11 @@ CONFIG_TARGET_mvebu64=y
 # CONFIG_TARGET_uml is not set
 # CONFIG_TARGET_zynq is not set
 # CONFIG_TARGET_x86 is not set
-# CONFIG_TARGET_mvebu64_armada-ESPRESSObin is not set
-# CONFIG_TARGET_mvebu64_armada-a8k-MACHIATOBin is not set
-# CONFIG_TARGET_mvebu64_armada-a8k-8040-db is not set
-# CONFIG_TARGET_mvebu64_armada-a7k-7040-db is not set
-CONFIG_TARGET_mvebu64_armada-3720-db=y
-CONFIG_TARGET_BOARD="mvebu64"
+CONFIG_TARGET_methode_DEVICE_uDPU=y
+CONFIG_HAS_DEVICES=y
+CONFIG_TARGET_BOARD="methode"
 CONFIG_TARGET_SUBTARGET="generic"
-CONFIG_TARGET_PROFILE="armada-3720-db"
+CONFIG_TARGET_PROFILE="DEVICE_uDPU"
 CONFIG_TARGET_ARCH_PACKAGES="aarch64_cortex-a53_neon-vfpv4"
 CONFIG_DEFAULT_TARGET_OPTIMIZATION="-Os -pipe -march=armv8-a -mtune=cortex-a53"
 CONFIG_CPU_TYPE="cortex-a53+neon-vfpv4"
