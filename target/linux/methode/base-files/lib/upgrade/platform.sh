@@ -9,7 +9,7 @@ platform_check_image() {
 platform_do_upgrade() {
 	case "$board" in
 		*)
-			prep_ubi_part "$ARGV"
+			ubi_upgrade "$ARGV"
 		;;
 	esac
 }
