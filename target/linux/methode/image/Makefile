@@ -11,12 +11,11 @@ include $(INCLUDE_DIR)/image.mk
 KERNEL_LOADADDR := 0x00008000
 
 define Build/append-dtb
-	$(call Image/BuildDTB,$(if $(DEVICE_DTS_DIR),$(DEVICE_DTS_DIR),$(DTS_DIR))/marvell/$(DEVICE_DTS).dts,$@.dtb)
-	cat $@.dtb >> $@
+	$(call Image/BuildDTB,$(if $(DEVICE_DTS_DIR),$(DEVICE_DTS_DIR),$(DTS_DIR))/marvell/$(DEVICE_DTS).dts,$(KDIR)/$(DEVICE_DTS).dtb)
 endef
 
 define Build/install-dtb
-	$(CP) $(KDIR)/$(BOARD_NAME).dtb $(BIN_DIR)/$(DEVICE_DTS).dtb;
+	$(CP) $(KDIR)/$(DEVICE_DTS).dtb $(BIN_DIR)/$(DEVICE_DTS).dtb;
 endef
 
 define Build/build-ubi
