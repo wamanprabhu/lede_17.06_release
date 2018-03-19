@@ -27,7 +27,7 @@ define Build/build-ubi
 
 	# Create UBI image
 	 $(STAGING_DIR_HOST)/bin/mkfs.ubifs \
-		-d $(BUILD_DIR)/root-methode -m 1 -e 65408 -c 2048 -o $(STAGING_DIR)/ubi.img
+		-F -d $(BUILD_DIR)/root-methode -m 1 -e 65408 -c 2048 -o $(STAGING_DIR)/ubi.img
 
 	# Create ubinize.cfd
 	echo -e "[ubifs]\nmode=ubi\nimage=$(STAGING_DIR)/ubi.img\nvol_id=0\nvol_type=dynamic\nvol_name=ubifs\nvol_flags=autoresize" \
