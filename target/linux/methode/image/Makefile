@@ -25,19 +25,15 @@ define Build/build-ubi
 	$(CP) $(KDIR)/$(DEVICE_DTS).dtb $(TARGET_DIR)/boot
 
 	# Create UBI image
-	 $(STAGING_DIR_HOST)/bin/mkfs.ubifs \
-		-F -d $(BUILD_DIR)/root-methode -m 1 -e 65408 -c 2048 -o $(STAGING_DIR)/ubi.img
+	$(STAGING_DIR_HOST)/bin/mkfs.ubifs -r $(BUILD_DIR)/root-methode -m 1 -e 65408 -c 65536 -o $(STAGING_DIR)/ubi.img
 
 	# Create ubinize.cfd
-	echo -e "[ubifs]\nmode=ubi\nimage=$(STAGING_DIR)/ubi.img\nvol_id=0\nvol_type=dynamic\nvol_name=ubifs\nvol_flags=autoresize" \
-	> $(STAGING_DIR)/ubinize.cfg
+	echo -e "[ubifs]\nmode=ubi\nimage=$(STAGING_DIR)/ubi.img\nvol_id=0\nvol_size=100MiB\nvol_type=dynamic\nvol_name=ubifs" > $(STAGING_DIR)/ubinize.cfg
 endef
 
 define Build/build-ubifs
 	$(Build/build-ubi)
-	$(STAGING_DIR_HOST)/bin/ubinize \
-		-o $(BIN_DIR)/$(IMG_PREFIX)-firmware.ubi -m 1 -p 64KiB -s 1 \
-		$(STAGING_DIR)/ubinize.cfg
+	$(STAGING_DIR_HOST)/bin/ubinize -o $(BIN_DIR)/$(IMG_PREFIX)-firmware.ubi -m 1 -p 65536 -s 1 $(STAGING_DIR)/ubinize.cfg
 endef
 
 define Build/build-sysupgrade-img
